@@ -27,6 +27,18 @@ outputs to the directory the file is run from"""
 # IV trivial stuff
 #Refactor
 
+# V build a logo resizer-adder
+"""
+intake function gets filename or path-to-logo-file and passes it to 
+logo resizer. 
+logo resizer function reads output file size in x and y pixels. It then
+resizes logo to 1/3 of x and y, and saves it to temporary
+logo adder takes the original outputfile and the teporary logo file and
+lays the logo atop the qrcode file by position of the 1/2 x/y coordinates
+of the logo file places ontop of the 1/2 xy coordinates of the code image
+file.
+"""
+
 import qrcode
 import qrcode.constants
 import time
