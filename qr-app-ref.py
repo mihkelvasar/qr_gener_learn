@@ -1,22 +1,95 @@
 import time
 import qrcode
 
-# refactor - manual calls each input as a sepatate function. 
-# refactor - Each separate function does it's own type and bounds checking
-# refactor - extend inputs parameter saving to all options of the package,
+# refactoridea - manual calls each input as a separate function, type checking - yep
+# refactoridea - Each separate function does it's own type and bounds checking - yep
+# refactoridea - extend inputs parameter saving to all options of the package,
 # including orientation, background and foreground image etc.
+# refactoridea - add conversion counter using an external file, as a decorator function 
+
+def int_checker(x):
+    return isinstance(x, int)
+        
+def manual_version():
+    versiondata: int = input("Enter desired qr-code version between 1 and 40: ")
+    if int_checker(versiondata) == False:
+        print("Error: input must be an integer! This function will reload")
+        manual_version()
+    if versiondata < 1 or versiondata > 40:
+        print("Error! Entered version out of bounds")
+        pivot = input("Retry or Proceed with default settings? R/P: ").lower()
+        match pivot:
+            case "p": versiondata = None
+            case _: manual_version()
+        return versiondata
+    else:
+        return versiondata
+
+def manual_ec():
+    print("Enter desired Error Correction level in range from 0 to 3.")
+    print("1 for level L. Up to 7% of errors can be corrected.")
+    print("0 for level M. Up to 15% of errors can be corrected.")
+    print("3 for level Q. Up to 25% of errors can be corrected.")
+    print("2 for level H. Up to 30% of errors can be corrected.")
+    ec_level: int = input("Enter desired level of Error Correction: ")
+    if int_checker(ec_level) == False:
+        print("Error: input must be an integer! This function will reload")
+        manual_ec()
+    if ec_level < 0 or ec_level > 3:
+        print("Chosen Error correction level out of bounds")
+        pivot = input("Retry or Proceed with default settings? R/P: ").lower()
+        match pivot:
+            case "p": ec_level = 0
+            case _: manual_ec()
+        return ec_level
+    else:
+        return ec_level
+
+def manual_boxsize():
+    print("Enter desired pixel size for the dots/pixels in the code.")
+    man_box_size: int = input("Enter desired pixel size as integer: ")
+    if int_checker(man_box_size) == False:
+        print("Error: input must be an integer! This function will reload")
+        manual_boxsize()
+    if man_box_size < 1:
+        print("box size cannot be lower than 1")
+        pivot = input("Retry or Proceed with default settings? R/P: ").lower()
+        match pivot:
+            case "p": man_box_size = 10
+            case _: manual_boxsize()
+        return man_box_size
+    else:
+        return man_box_size
+
+def manual_border():
+    print("Enter desired border size in box sizes for the code image. Default is 4.")
+    print("Example: in previous step you set the box size as 2, thus the width of the border will be multiplied by 2.")
+    man_border: int = input("Enter desired border size as integer: ")
+    if int_checker(man_border) == False:
+        print("Error: input must be an integer! This function will reload")
+        manual_border()
+    if man_border < 0:
+        print("border width cannot be lower than 0")
+        pivot = input("Retry or Proceed with default settings? R/P: ").lower()
+        match pivot:
+            case "p": man_border = 4
+            case _: manual_border()
+        return man_border
+    else:
+        return man_border
+
 def manual_settings():
     print("Enter parameters for manual conversion when prompted.")
     time.sleep(1)
-    version = input("Enter desired qr-code version between 1 and 40:" )
-    error_correction = input("Enter desired error correction level between 0 and 3 (inclusive): ")
-    box_size = input("Enter desired 'pixel' size in pixels: ")
-    border = input("Enter desired border size (in multiples of 'pixel' size): ")
+    version = manual_version()
+    error_correction = manual_ec()
+    box_size = manual_boxsize()
+    border = manual_border()
     manual_values = [version, error_correction, box_size, border]
     return manual_values
 
 #asks user to choose automatic and manual conversion settings. returns settings to global as a dict
-# refactor - remove the unnecessary dict(zip(x)) for default_settings
+# refactoridea - remove the unnecessary dict(zip(x)) for default_settings
 def settings_setter():
     default_keys = ["version", "error_correction", "box_size", "border"]
     default_values = [None, 0, 10, 4]
@@ -54,7 +127,7 @@ def outsideframe(): #This Works
             badchoice()
             outsideframe()
 
-#in case of unlisted choice, it gives you an Married With Children joke
+#in case of unlisted choice in main menu, a Married With Children joke
 def badchoice(): #This Works
     print("Invalid response.The code will run again")
     time.sleep(2)
@@ -68,8 +141,8 @@ def text_to_qr():
     conversion_params = settings_setter()
     targetdata = input("Enter string to be converted (or leave blank for text file prompt): ")
     if targetdata == "":
-        targetfile = input("Enter name of file containing target text: ")
-    outputname = input("Enter filename of the output file. Can be lefct blank: ")
+        targetfile = input("Enter name of file (with extension) containing target text: ")
+    outputname = input("Enter name (w/o extension) of the output file. Can be left blank: ")
     if outputname == "":
         outputname = "text_to_qrcode"
     if targetfile != None:
@@ -77,11 +150,10 @@ def text_to_qr():
     else:
         qr_convert(targetdata, outputname, conversion_params, linecounter)
 
-
 def batch_to_qr():
     conversion_params = settings_setter()
     targetdata = input("Enter name of the source file with extension: ")
-    outputname = input("Enter name for the the output files. Can be left blank: ")
+    outputname = input("Enter name (w/o extension) for the the output files. Can be left blank: ")
     if outputname == None:
         outputname = "batch_to_qrcode"
     batch_read(targetdata, outputname, conversion_params)
@@ -111,13 +183,10 @@ def qr_convert(data, name, settings, linecounter):
     fitmentdict0 = {"fit": False}
     fitmentdict1 = {"fit": True}
 
-
     if settings["version"] == None:
         fitmentdictn = fitmentdict1
     else:
         fitmentdictn = fitmentdict0
-    
-         
 
     qr_target = qrcode.QRCode(**settings)
     qr_target.add_data(data)
@@ -125,7 +194,7 @@ def qr_convert(data, name, settings, linecounter):
     try:
         qr_target.make(**fitmentdictn)
     except:
-        print("QR code version incompatible with target data.")
+        print("Error: Chosen QR-code version incompatible with size of target data.")
         exce_choice = input("Use default parameters? Y/N").lower()
         match exce_choice:
             case "y": qr_target.make(**fitmentdict1)
