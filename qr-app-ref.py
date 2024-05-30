@@ -121,7 +121,15 @@ def qr_convert(data, name, settings, linecounter):
 
     qr_target = qrcode.QRCode(**settings)
     qr_target.add_data(data)
-    qr_target.make(**fitmentdictn)
+
+    try:
+        qr_target.make(**fitmentdictn)
+    except:
+        print("QR code version incompatible with target data.")
+        exce_choice = input("Use default parameters? Y/N").lower()
+        match exce_choice:
+            case "y": qr_target.make(**fitmentdict1)
+            case _: print("This program will now exit")
     
 
     img = qr_target.make_image(back_color=basic_back, fill_color=basic_fill)
