@@ -8,21 +8,32 @@ import qrcode
 # refactoridea - add conversion counter using an external file, as a decorator function 
 
 def int_checker(x):
-    return isinstance(x, int)
+    try:
+        y = int(x)
+        return y
+    except:
+        y = None
+        return y
         
 def manual_version():
-    versiondata: int = input("Enter desired qr-code version between 1 and 40: ")
-    if int_checker(versiondata) == False:
+    versiondata = input("Enter desired qr-code version between 1 and 40: ")
+    versiondata1 = int_checker(versiondata)
+    if versiondata1 == None:
         print("Error: input must be an integer! This function will reload")
         manual_version()
-    if versiondata < 1 or versiondata > 40:
+    elif versiondata1 < 1 or versiondata1 > 40:
         print("Error! Entered version out of bounds")
         pivot = input("Retry or Proceed with default settings? R/P: ").lower()
         match pivot:
-            case "p": versiondata = None
+            case "p": 
+                versiondata = None
+                print("Proceeding with default QR-code version")
+                print("---------------------------------------")
+                return versiondata
             case _: manual_version()
-        return versiondata
     else:
+        print("input accepted and verified")
+        print("---------------------------")
         return versiondata
 
 def manual_ec():
@@ -31,52 +42,76 @@ def manual_ec():
     print("0 for level M. Up to 15% of errors can be corrected.")
     print("3 for level Q. Up to 25% of errors can be corrected.")
     print("2 for level H. Up to 30% of errors can be corrected.")
-    ec_level: int = input("Enter desired level of Error Correction: ")
-    if int_checker(ec_level) == False:
+    ec_level = input("Enter desired level of Error Correction: ")
+    ec_level1 = int_checker(ec_level)
+    if ec_level1 == None:
         print("Error: input must be an integer! This function will reload")
         manual_ec()
-    if ec_level < 0 or ec_level > 3:
+    elif ec_level1 < 0 or ec_level1 > 3:
         print("Chosen Error correction level out of bounds")
         pivot = input("Retry or Proceed with default settings? R/P: ").lower()
         match pivot:
-            case "p": ec_level = 0
+            case "p": 
+                ec_level = 0
+                print("Proceeding with default Error Correction level")
+                print("---------------------------------------")
+                return ec_level
             case _: manual_ec()
-        return ec_level
     else:
-        return ec_level
+        print("input accepted and verified")
+        print("---------------------------")
+        return  ec_level
 
 def manual_boxsize():
     print("Enter desired pixel size for the dots/pixels in the code.")
-    man_box_size: int = input("Enter desired pixel size as integer: ")
-    if int_checker(man_box_size) == False:
+    man_box_size = input("Enter desired pixel size as integer: ")
+    man_box_size1 = int_checker(man_box_size)
+    if man_box_size1 == None:
         print("Error: input must be an integer! This function will reload")
         manual_boxsize()
-    if man_box_size < 1:
+    if man_box_size1 < 1:
         print("box size cannot be lower than 1")
         pivot = input("Retry or Proceed with default settings? R/P: ").lower()
         match pivot:
-            case "p": man_box_size = 10
+            case "p": 
+                man_box_size = 10
+                print("Proceeding with default box size")
+                print("---------------------------------------")
+                return man_box_size
             case _: manual_boxsize()
-        return man_box_size
     else:
+        print("input accepted and verified")
+        print("---------------------------")
         return man_box_size
 
 def manual_border():
     print("Enter desired border size in box sizes for the code image. Default is 4.")
     print("Example: in previous step you set the box size as 2, thus the width of the border will be multiplied by 2.")
-    man_border: int = input("Enter desired border size as integer: ")
-    if int_checker(man_border) == False:
+    man_border = input("Enter desired border size as integer: ")
+    man_border1 = int_checker(man_border)
+    if man_border1 == None:
         print("Error: input must be an integer! This function will reload")
         manual_border()
-    if man_border < 0:
+    elif man_border1 < 0:
         print("border width cannot be lower than 0")
         pivot = input("Retry or Proceed with default settings? R/P: ").lower()
         match pivot:
-            case "p": man_border = 4
+            case "p": 
+                man_border = 4
+                print("Proceeding with default border size")
+                print("---------------------------------------")
+                return man_border
             case _: manual_border()
-        return man_border
     else:
+        print("input accepted and verified")
+        print("---------------------------")
         return man_border
+
+# problem - input is accepted as string and during execution interpreted as an int
+# problem - adding typechecking for input variable is pointless, because it is a str
+# problem - casting input as int is a problem because any other datatype will crash
+# solution - try/except?
+# problem - wall of text, add blank/dashed lines
 
 def manual_settings():
     print("Enter parameters for manual conversion when prompted.")
@@ -87,6 +122,8 @@ def manual_settings():
     border = manual_border()
     manual_values = [version, error_correction, box_size, border]
     return manual_values
+    # check for data type of elements in manual_values, are they still str?
+    # does interpeting as int take place at dict(zip(x,y))?
 
 #asks user to choose automatic and manual conversion settings. returns settings to global as a dict
 # refactoridea - remove the unnecessary dict(zip(x)) for default_settings
@@ -207,6 +244,9 @@ def qr_convert(data, name, settings, linecounter):
         img.save(f"{name}.png")
     else:
         img.save(f"{name}-{linecounter}.png")
+
+    # refactoridea - instead of 3 fitmentdicts, just alter one dict
+    # refactoridea - pass back and fill color values as dicts
 
 if __name__=="__main__":
     outsideframe()
