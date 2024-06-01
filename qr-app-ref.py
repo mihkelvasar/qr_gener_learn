@@ -3,9 +3,10 @@ import qrcode
 
 # refactoridea - manual calls each input as a separate function, type checking - yep
 # refactoridea - Each separate function does it's own type and bounds checking - yep
-# refactoridea - extend inputs parameter saving to all options of the package,
-# including orientation, background and foreground image etc.
+# refactoridea - manually select bg and fg colors
 # refactoridea - add conversion counter using an external file, as a decorator function 
+# refactoridea - reverse a qrcode parse qr code into a string and write to cmd or file
+# refactoridea - rewrite all in JS (after figuring out tkinter and turning it into an exe)
 
 def int_checker(x):
     try:
@@ -107,12 +108,6 @@ def manual_border():
         print("---------------------------")
         return man_border
 
-# problem - input is accepted as string and during execution interpreted as an int
-# problem - adding typechecking for input variable is pointless, because it is a str
-# problem - casting input as int is a problem because any other datatype will crash
-# solution - try/except?
-# problem - wall of text, add blank/dashed lines
-
 def manual_settings():
     print("Enter parameters for manual conversion when prompted.")
     time.sleep(1)
@@ -122,10 +117,8 @@ def manual_settings():
     border = manual_border()
     manual_values = [version, error_correction, box_size, border]
     return manual_values
-    # check for data type of elements in manual_values, are they still str?
-    # does interpeting as int take place at dict(zip(x,y))?
 
-#asks user to choose automatic and manual conversion settings. returns settings to global as a dict
+#asks user to choose automatic and manual conversion settings.
 # refactoridea - remove the unnecessary dict(zip(x)) for default_settings
 def settings_setter():
     default_keys = ["version", "error_correction", "box_size", "border"]
@@ -232,7 +225,7 @@ def qr_convert(data, name, settings, linecounter):
         qr_target.make(**fitmentdictn)
     except:
         print("Error: Chosen QR-code version incompatible with size of target data.")
-        exce_choice = input("Use default parameters? Y/N").lower()
+        exce_choice = input("Use default parameters? Y/N: ").lower()
         match exce_choice:
             case "y": qr_target.make(**fitmentdict1)
             case _: print("This program will now exit")
@@ -247,6 +240,7 @@ def qr_convert(data, name, settings, linecounter):
 
     # refactoridea - instead of 3 fitmentdicts, just alter one dict
     # refactoridea - pass back and fill color values as dicts
+    # refactoridea - what if the sring length exceeds version 40 limit?
 
 if __name__=="__main__":
     outsideframe()
