@@ -1,7 +1,7 @@
 # QR Gener Learn
 
 ## What is it?
-This is a QR Code generation program, written fully in Python, currently existing as program run an interacted with from a commandline.  
+This is a QR Code generation program, written fully in Python, currently existing as program run and interacted with from a commandline.  
 It uses one public library - the qrcode 7.4.2  
 I am currently writing it at a hobbyist's pace one can see on my activity bar.  
 Hopefully this can be part of my portfolio allowing me to find work as a tester or a developer in 2024.  
